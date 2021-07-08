@@ -35,7 +35,7 @@ void MidiInput::start_input_system(int port) { // only ever call once
 		is_operating = true;
 
 		midiin.openPort(port);
-		std::cout << "Reading MIDI from " << port_name.to_int() << "." << std::endl;
+		std::cout << ("Reading MIDI from " + port_name).c_str() << "." << std::endl;
 		midiin.setCallback(&message_callback, this);
 	}
 }
