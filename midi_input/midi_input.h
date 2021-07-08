@@ -5,7 +5,8 @@
 #include <memory>
 
 #include "RtMidi.h"
-#include "core/reference.h"
+
+#include "core/object/ref_counted.h"
 
 
 class Message { // all code is here because it simplifies things in the short term
@@ -58,6 +59,7 @@ public:
 			std::cout << "Time: " << _time_since_start << "; " << std::endl;
 		}
 	}
+
 	Array Convert() {
 		Array converted;
 		converted.push_back(event_type.c_str());
@@ -70,8 +72,8 @@ public:
 
 
 
-class MidiInput : public Reference {
-	GDCLASS(MidiInput, Reference);
+class MidiInput : public RefCounted {
+	GDCLASS(MidiInput, RefCounted);
 
 
 protected:
@@ -79,24 +81,19 @@ protected:
 
 /*************************************************/
 // my crud
-public:
-	bool is_opperating = false;
+friend void message_callback(double timeStamp, std::vector<unsigned char> *message, void *userData);
+
+private:
+	bool is_operating = false;
 
 	String port_name = "null";
-
-	std::thread system_thread;
-	bool end_thread = true;
 
 	const int MAX_CACHED_MESSAGES = 64;
 	std::vector<Message> cached_messages;
 
 	double total_time_since_start;
-	std::vector<unsigned char> message;
 
-	std::unique_ptr<RtMidiIn> midiin;
-
-	// running variables so we don't initialise theme every frame
-	double stamp;
+	RtMidiIn midiin;
 
 public:
 	Array get_messages();
@@ -111,5 +108,7 @@ public:
 /*************************************************/
 
 };
+
+void message_callback(double timeStamp, std::vector<unsigned char> *message, void *userData);
 
 #endif // MIDIINPUT_H
