@@ -6,7 +6,7 @@
 #include "core/reference.h"
 
 
-class Message { // all code is here because it simplifies things in the short term
+class MidiMessage {
 public:
 	int _event;
 	int _note;
@@ -33,31 +33,9 @@ private:
 	};
 
 public:
-	Message(std::vector<unsigned char> *message, double stamp, bool print_data = true) {
-		_time_since_start = stamp;
+	MidiMessage(std::vector<unsigned char> *message, double stamp);
 
-		_event = (int)message->at(0); // Byte 0 - Event Type
-		_note = (int)message->at(1); // Byte 1 - Note
-		_velocity = (int)message->at(2); // Byte 2 - Velocity
-
-		if (_event == 144)
-			event_type = "note_down";
-		else if (_event == 128)
-			event_type = "note_up";
-		else
-			event_type = "null";
-
-		note_name = note_matrix[_note % 12] + std::to_string((_note / 12) - 1);
-
-		if (print_data) {
-			std::cout << "Note: " << note_name << "; ";
-			std::cout << "Event: " << event_type << "; ";
-			std::cout << "Velocity: " << _velocity << "; ";
-			std::cout << "Time: " << _time_since_start << "; " << std::endl;
-		}
-	}
-
-	Array Convert() {
+	Array convert_to_array() {
 		Array converted;
 		converted.push_back(event_type.c_str());
 		converted.push_back(note_name.c_str());
@@ -76,8 +54,7 @@ class MidiInput : public Reference {
 protected:
 	static void _bind_methods();
 
-/*************************************************/
-// my crud
+
 friend void message_callback(double timeStamp, std::vector<unsigned char> *message, void *userData);
 
 private:
@@ -86,7 +63,7 @@ private:
 	String port_name = "null";
 
 	const int MAX_CACHED_MESSAGES = 64;
-	std::vector<Message> cached_messages;
+	std::vector<MidiMessage> cached_messages;
 
 	double total_time_since_start;
 
@@ -101,9 +78,6 @@ public:
 
 	MidiInput();
 	~MidiInput();
-
-/*************************************************/
-
 };
 
 void message_callback(double timeStamp, std::vector<unsigned char> *message, void *userData);

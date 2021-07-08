@@ -10,3 +10,4 @@ void register_midi_input_types() {
 void unregister_midi_input_types() {
 	// Nothing to do here in this example.
 }
+

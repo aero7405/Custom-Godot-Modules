@@ -12,9 +12,10 @@ void message_callback(double timeStamp, std::vector<unsigned char> *message, voi
 		self->total_time_since_start += timeStamp;
 
 		if (self->cached_messages.size() < self->MAX_CACHED_MESSAGES) {
-			Message mes(message, self->total_time_since_start, true);
+			MidiMessage mes(message, self->total_time_since_start);
 
-			self->cached_messages.push_back(mes);
+			if (mes.event_type != "null")
+				self->cached_messages.push_back(mes);
 		}
 	}
 }
@@ -35,7 +36,7 @@ void MidiInput::start_input_system(int port) { // only ever call once
 		is_operating = true;
 
 		midiin.openPort(port);
-		std::cout << ("Reading MIDI from " + port_name).c_str() << "." << std::endl;
+		std::cout << "Reading MIDI from " << port_name.c_str() << "." << std::endl;
 		midiin.setCallback(&message_callback, this);
 	}
 }
@@ -44,8 +45,8 @@ Array MidiInput::get_messages() {
 	Array _cached_messages;
 
 	if (is_operating) {
-		for (Message mes : cached_messages) {
-			if (mes.Convert()[0] != "null") _cached_messages.append(mes.Convert()); // ignores non note inputs for now
+		for (MidiMessage &mes : cached_messages) {
+			_cached_messages.append(mes.convert_to_array()); // ignores non note inputs for now
 		}
 
 		cached_messages.clear();
@@ -91,4 +92,22 @@ MidiInput::MidiInput() {
 }
 
 MidiInput::~MidiInput() {
+}
+
+
+MidiMessage::MidiMessage(std::vector<unsigned char> *message, double stamp) {
+	_time_since_start = stamp;
+
+	_event = (int)message->at(0); // Byte 0 - Event Type
+	_note = (int)message->at(1); // Byte 1 - Note
+	_velocity = (int)message->at(2); // Byte 2 - Velocity
+
+	if (_event == 144)
+		event_type = "note_down";
+	else if (_event == 128)
+		event_type = "note_up";
+	else
+		event_type = "null";
+
+	note_name = note_matrix[_note % 12] + std::to_string((_note / 12) - 1);
 }
