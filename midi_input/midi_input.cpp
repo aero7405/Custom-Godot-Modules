@@ -44,7 +44,7 @@ void MidiInput::start_input_system(int port) { // only ever call once
 		is_opperating = true;
 
 		midiin->openPort(port);
-		std::cout << ("Reading MIDI from " + port_name).c_str() << "." << std::endl;
+		std::cout << "Reading MIDI from " << port_name.to_int() << "." << std::endl;
 
 		// this is deleted when it leaves this scope even though system_thread is defined in the header
 		end_thread = false;

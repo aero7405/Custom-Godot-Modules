@@ -5,7 +5,8 @@
 #include <memory>
 
 #include "RtMidi.h"
-#include "core/reference.h"
+
+#include "core/object/ref_counted.h"
 
 
 class Message { // all code is here because it simplifies things in the short term
@@ -70,8 +71,8 @@ public:
 
 
 
-class MidiInput : public Reference {
-	GDCLASS(MidiInput, Reference);
+class MidiInput : public RefCounted {
+	GDCLASS(MidiInput, RefCounted);
 
 
 protected:
