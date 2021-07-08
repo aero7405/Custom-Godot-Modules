@@ -81,7 +81,9 @@ protected:
 
 /*************************************************/
 // my crud
-public:
+friend void message_callback(double timeStamp, std::vector<unsigned char> *message, void *userData);
+
+private:
 	bool is_operating = false;
 
 	String port_name = "null";
