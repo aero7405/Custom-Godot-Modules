@@ -1,9 +1,6 @@
 #ifndef MIDIINPUT_H
 #define MIDIINPUT_H
 
-#include <thread>
-#include <memory>
-
 #include "RtMidi.h"
 
 #include "core/object/ref_counted.h"
