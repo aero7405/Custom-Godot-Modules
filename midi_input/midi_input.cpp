@@ -30,10 +30,10 @@ void MidiInput::start_input_system(int port) { // only ever call once
 
 		// disable functionality
 		port_name = "null";
-		is_opperating = false;
+		is_operating = false;
 	} else { // only should happen if port exists
 		port_name = midiin.getPortName(port).c_str();
-		is_opperating = true;
+		is_operating = true;
 
 		midiin.openPort(port);
 		std::cout << "Reading MIDI from " << port_name.to_int() << "." << std::endl;
@@ -45,7 +45,7 @@ Array MidiInput::get_messages() {
 	Array _cached_messages;
 
 
-	if (is_opperating) {
+	if (is_operating) {
 		for (Message mes : cached_messages) {
 			if (mes.Convert()[0] != "null") _cached_messages.append(mes.Convert()); // ignores non note inputs for now
 		}
@@ -61,16 +61,16 @@ String MidiInput::get_port_name() {
 }
 
 bool MidiInput::is_port_connected(int port) { // if returns false object needs to be deleted and instanced again - this function should be called at leastt every few seconds
-	if (!is_opperating) {
+	if (!is_operating) {
 		port_name = "null";
-		is_opperating = false;
+		is_operating = false;
 		return false;
 	}
 
 	unsigned int nPorts = midiin.getPortCount();
 	if (nPorts < port + 1) {
 		port_name = "null";
-		is_opperating = false;
+		is_operating = false;
 		return false;
 	}
 

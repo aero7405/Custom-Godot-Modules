@@ -82,7 +82,7 @@ protected:
 /*************************************************/
 // my crud
 public:
-	bool is_opperating = false;
+	bool is_operating = false;
 
 	String port_name = "null";
 
