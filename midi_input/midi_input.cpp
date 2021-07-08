@@ -21,14 +21,10 @@ void message_callback(double timeStamp, std::vector<unsigned char> *message, voi
 }
 
 void MidiInput::start_input_system(int port) { // only ever call once
-
-	// start loop here
-	midiin = std::make_unique<RtMidiIn>();
-
 	total_time_since_start = 0;
 
 	// check port
-	unsigned int nPorts = midiin->getPortCount();
+	unsigned int nPorts = midiin.getPortCount();
 	if (nPorts < port + 1) {
 		std::cout << "Port not available! " << std::endl;
 
@@ -36,12 +32,12 @@ void MidiInput::start_input_system(int port) { // only ever call once
 		port_name = "null";
 		is_opperating = false;
 	} else { // only should happen if port exists
-		port_name = midiin->getPortName(port).c_str();
+		port_name = midiin.getPortName(port).c_str();
 		is_opperating = true;
 
-		midiin->openPort(port);
+		midiin.openPort(port);
 		std::cout << "Reading MIDI from " << port_name.to_int() << "." << std::endl;
-		midiin->setCallback(&message_callback, this);
+		midiin.setCallback(&message_callback, this);
 	}
 }
 
@@ -71,7 +67,7 @@ bool MidiInput::is_port_connected(int port) { // if returns false object needs t
 		return false;
 	}
 
-	unsigned int nPorts = midiin->getPortCount();
+	unsigned int nPorts = midiin.getPortCount();
 	if (nPorts < port + 1) {
 		port_name = "null";
 		is_opperating = false;

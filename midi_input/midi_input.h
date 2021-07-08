@@ -92,7 +92,7 @@ public:
 	double total_time_since_start;
 	std::vector<unsigned char> message;
 
-	std::unique_ptr<RtMidiIn> midiin;
+	RtMidiIn midiin;
 
 	// running variables so we don't initialise theme every frame
 	double stamp;
