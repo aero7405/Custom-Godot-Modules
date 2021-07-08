@@ -59,6 +59,7 @@ public:
 			std::cout << "Time: " << _time_since_start << "; " << std::endl;
 		}
 	}
+
 	Array Convert() {
 		Array converted;
 		converted.push_back(event_type.c_str());
@@ -85,9 +86,6 @@ public:
 
 	String port_name = "null";
 
-	std::thread system_thread;
-	bool end_thread = true;
-
 	const int MAX_CACHED_MESSAGES = 64;
 	std::vector<Message> cached_messages;
 
@@ -112,5 +110,7 @@ public:
 /*************************************************/
 
 };
+
+void message_callback(double timeStamp, std::vector<unsigned char> *message, void *userData);
 
 #endif // MIDIINPUT_H

@@ -6,19 +6,16 @@
 #include "midi_input.h"
 
 
-void input_system(MidiInput *self) {
-	while (!self->end_thread) {
+void message_callback(double timeStamp, std::vector<unsigned char> *message, void *userData) {
+	MidiInput *self = static_cast<MidiInput *>(userData);
 
-		self->stamp = self->midiin->getMessage(&self->message);
+	if (message->size() >= 3) {
+		self->total_time_since_start += timeStamp;
 
-		if (self->message.size() >= 3) {
-			self->total_time_since_start += self->stamp;
+		if (self->cached_messages.size() < self->MAX_CACHED_MESSAGES) {
+			Message mes(message, self->total_time_since_start, true);
 
-			if (self->cached_messages.size() < self->MAX_CACHED_MESSAGES) {
-				Message mes(&self->message, self->total_time_since_start, true);
-
-				self->cached_messages.push_back(mes);
-			}
+			self->cached_messages.push_back(mes);
 		}
 	}
 }
@@ -39,17 +36,12 @@ void MidiInput::start_input_system(int port) { // only ever call once
 		port_name = "null";
 		is_opperating = false;
 	} else { // only should happen if port exists
-
 		port_name = midiin->getPortName(port).c_str();
 		is_opperating = true;
 
 		midiin->openPort(port);
 		std::cout << "Reading MIDI from " << port_name.to_int() << "." << std::endl;
-
-		// this is deleted when it leaves this scope even though system_thread is defined in the header
-		end_thread = false;
-		system_thread = std::thread(input_system, this);
-
+		midiin->setCallback(&message_callback, this);
 	}
 }
 
@@ -105,10 +97,4 @@ MidiInput::MidiInput() {
 }
 
 MidiInput::~MidiInput() {
-
-	// cleanup
-	if (!end_thread) {
-		end_thread = true;
-		system_thread.join();
-	}
 }
