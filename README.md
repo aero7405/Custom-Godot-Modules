@@ -1,10 +1,8 @@
 # Custom Godot Build
  
-This is a repos for all of my custom modules for thhe Godot Engine.
+This is a repos for all of my custom modules for the Godot Engine.
 To install follow the instructions in the docs and paste the module in with the other modules.
-
-https://github.com/TrueAerosoul/Custom-Godot-Modules
-
+https://docs.godotengine.org/en/stable/development/compiling/compiling_for_windows.html
 Make sure to compile a custom export template and to specify it in the export settings.
 
 Currently Only Windows is supported for the editor and export presets.
