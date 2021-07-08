@@ -44,7 +44,6 @@ void MidiInput::start_input_system(int port) { // only ever call once
 Array MidiInput::get_messages() {
 	Array _cached_messages;
 
-
 	if (is_operating) {
 		for (Message mes : cached_messages) {
 			if (mes.Convert()[0] != "null") _cached_messages.append(mes.Convert()); // ignores non note inputs for now

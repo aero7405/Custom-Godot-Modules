@@ -90,12 +90,8 @@ public:
 	std::vector<Message> cached_messages;
 
 	double total_time_since_start;
-	std::vector<unsigned char> message;
 
 	RtMidiIn midiin;
-
-	// running variables so we don't initialise theme every frame
-	double stamp;
 
 public:
 	Array get_messages();
