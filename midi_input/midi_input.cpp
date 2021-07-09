@@ -92,7 +92,7 @@ bool MidiInput::is_port_connected(int port) { // if returns false object needs t
 
 // binds methods to class
 void MidiInput::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("start_input_system", "port"), &MidiInput::start_input_system);
+	ClassDB::bind_method(D_METHOD("start_input_system", "port", "use_signals"), &MidiInput::start_input_system);
 
 	// requires input system to be started
 	ClassDB::bind_method(D_METHOD("get_messages"), &MidiInput::get_messages);
