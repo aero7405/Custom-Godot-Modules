@@ -3,24 +3,21 @@
 
 #include "RtMidi.h"
 #include "midi_input.h"
-
+#include "core/object.h"
 
 void message_callback(double timeStamp, std::vector<unsigned char> *message, void *userData) {
 	MidiInput *self = static_cast<MidiInput *>(userData);
 
-	if (message->size() >= 3) {
-		self->total_time_since_start += timeStamp;
-
-		if (self->cached_messages.size() < self->MAX_CACHED_MESSAGES) {
-			MidiMessage mes(message, self->total_time_since_start);
-
-			if (mes.event_type != "null")
-				self->cached_messages.push_back(mes);
-		}
+	if (message->size() < 3) {
+		return;
 	}
+
+	self->total_time_since_start += timeStamp;
+	MidiMessage mes(message, self->total_time_since_start);
+	self->emit_signal("midi_action", mes.convert_to_array());
 }
 
-void MidiInput::start_input_system(int port) { // only ever call once
+void MidiInput::start_input_system(int port, bool use_signals) { // only ever call once
 	total_time_since_start = 0;
 
 	// check port
@@ -36,24 +33,41 @@ void MidiInput::start_input_system(int port) { // only ever call once
 		is_operating = true;
 
 		midiin.openPort(port);
-		std::cout << "Reading MIDI from " << port_name.c_str() << "." << std::endl;
-		midiin.setCallback(&message_callback, this);
+		std::cout << "Reading MIDI from " << port_name.to_int() << "." << std::endl;
+		
+		if (use_signals) {
+			midiin.setCallback(&message_callback, this);
+		}
 	}
 }
 
 Array MidiInput::get_messages() {
-	Array _cached_messages;
-
-	if (is_operating) {
-		for (MidiMessage &mes : cached_messages) {
-			_cached_messages.append(mes.convert_to_array()); // ignores non note inputs for now
-		}
-
-		cached_messages.clear();
+	if (!is_operating) {
+		return Array(); // Might be better to return a `null` or something indicating an error.
 	}
 
-	return _cached_messages;
+	Array result;
+
+	while (true) {
+		std::vector<unsigned char> message;
+		double stamp = midiin.getMessage(&message);
+
+		if (message.size() == 0) {
+			break;
+		}
+
+		if (message.size() >= 3) {
+			total_time_since_start += stamp;
+
+			MidiMessage mes(&message, total_time_since_start);
+
+			result.append(mes.convert_to_array());
+		}
+	}
+	
+	return result;
 }
+
 
 String MidiInput::get_port_name() {
 	return port_name; // if "null" is returned no port is currently active
@@ -78,7 +92,7 @@ bool MidiInput::is_port_connected(int port) { // if returns false object needs t
 
 // binds methods to class
 void MidiInput::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("start_input_system", "port"), &MidiInput::start_input_system);
+	ClassDB::bind_method(D_METHOD("start_input_system", "port", "use_signals"), &MidiInput::start_input_system);
 
 	// requires input system to be started
 	ClassDB::bind_method(D_METHOD("get_messages"), &MidiInput::get_messages);

@@ -59,12 +59,7 @@ friend void message_callback(double timeStamp, std::vector<unsigned char> *messa
 
 private:
 	bool is_operating = false;
-
 	String port_name = "null";
-
-	const int MAX_CACHED_MESSAGES = 64;
-	std::vector<MidiMessage> cached_messages;
-
 	double total_time_since_start;
 
 	RtMidiIn midiin;
@@ -74,7 +69,7 @@ public:
 	String get_port_name();
 	bool is_port_connected(int port);
 
-	void start_input_system(int port);
+	void start_input_system(int port, bool use_signals = false);
 
 	MidiInput();
 	~MidiInput();

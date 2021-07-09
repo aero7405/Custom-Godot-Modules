@@ -1,3 +1,23 @@
-Import('env')
+Import("env")
+Import("env_modules")
 
-env.add_source_files(env.modules_sources, "*.cpp")
+env_midi_input = env_modules.Clone()
+
+env_midi_input.add_source_files(env.modules_sources, "*.cpp")
+
+if env["platform"] == "x11":
+    env_midi_input.Append(CPPDEFINES=["__LINUX_ALSA__"])
+    env_midi_input.Append(LIBS=["asound", "pthread"])
+elif env["platform"] == "android":
+    env_midi_input.Append(CPPDEFINES=["__LINUX_ALSA__"])
+    env_midi_input.Append(LIBS=["asound", "pthread"])
+elif env["platform"] == "windows":
+    env_midi_input.Append(CPPDEFINES=["__WINDOWS_MM__"])
+elif env["platform"] == "osx":
+    # This isn't tested, I don't own a Mac
+    env_midi_input.Append(CPPDEFINES=["__MACOSX_CORE__"])
+    env_raycast.Append(CPPFLAGS=["-framework", "CoreMIDI", "-framework", "CoreAudio", "-framework", "CoreFoundation"])
+elif env["platform"] == "iphone":
+    # This isn't tested, I don't own an iPhone
+    env_midi_input.Append(CPPDEFINES=["__MACOSX_CORE__"])
+    env_raycast.Append(CPPFLAGS=["-framework", "CoreMIDI", "-framework", "CoreAudio", "-framework", "CoreFoundation"])
