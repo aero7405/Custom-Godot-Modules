@@ -98,6 +98,7 @@ void MidiInput::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_messages"), &MidiInput::get_messages);
 	ClassDB::bind_method(D_METHOD("get_port_name"), &MidiInput::get_port_name);
 	ClassDB::bind_method(D_METHOD("is_port_connected", "port"), &MidiInput::is_port_connected);
+	ADD_SIGNAL(MethodInfo("midi_action", PropertyInfo(Variant::ARRAY, "message")));
 }
 
 
